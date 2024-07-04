@@ -1,72 +1,136 @@
 <!DOCTYPE html>
 <html lang="EN">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <title>URL Shortener Microservice</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        color: black;
-        background-color: whitesmoke;
-        text-align: center;
-        line-height: 1.4em;
-      }
-
-      main {
-        padding: 0;
-        margin-top: 40px;
-      }
-
-      h3 {
-        margin-top: 30px;
-      }
-
-      .user-stories li {
-        margin-bottom: 1em;
-      }
-
-      a {
-        color: #2574a9;
-      }
-
-      form {
-        margin: 10px auto;
-        padding: 20px;
-        max-width: 600px;
-      }
-
-      label {
-        margin-right: 10px;
-      }
-
-      input {
-        padding: 5px;
-      }
-
-      input[type='text'] {
-        width: 220px;
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>URL Shortener Microservice</h1>
-    <main>
-      <section>
-        <form action="api/shorturl" method="POST">
-          <fieldset>
-            <legend>URL Shortener</legend>
-            <label for="url_input">URL:</label>
-            <input id="url_input" type="text" name="url" placeholder="https://www.freecodecamp.org/" />
-            <input type="submit" value="POST URL" />
-          </fieldset>
-        </form>
-      </section>
-    </main>
-    <footer>
-      <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
-    </footer>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <title>URL Shortener Microservice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: black;
+      background-color: whitesmoke;
+      text-align: center;
+      line-height: 1.4em;
+    }
+    
+    main {
+      padding: 0;
+      margin-top: 40px;
+    }
+    
+    h3 {
+      padding: 30px;
+    }
+    
+    .user-stories li {
+      margin-bottom: 1em;
+    }
+    
+    a {
+      color: #2574a9;
+    }
+    
+    form {
+      margin: 10px auto;
+      padding: 20px;
+      max-width: 1200px;
+    }
+    
+    label {
+      margin-right: 10px;
+    }
+    
+    input {
+      padding: 5px;
+    }
+    
+    input[type='text'] {
+      width: 220px;
+      text-align: center;
+    }
+    
+    .history, .explanation {
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 1200px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+    
+    .short-url {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>URL Shortener Microservice</h1>
+  <main>
+    <section>
+      <form id="shorten-form">
+        <fieldset>
+          <legend>URL Shortener</legend>
+          <label for="url_input">URL:</label>
+          <input id="url_input" type="text" name="url" placeholder="https://www.freecodecamp.org/" />
+          <input type="submit" value="POST URL" />
+          <footer>
+            <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
+          </footer>
+        </fieldset>
+        
+      </form>
+      
+    </section>
+    <section class="explanation">
+      <h3>How It Works</h3>
+      <p>This service allows you to shorten long URLs. Simply enter a URL into the input field above, and click "POST URL". You will receive a shortened URL that you can use to easily share or remember.</p>
+      <p>When someone visits the shortened URL, they will be redirected to the original URL. This is useful for sharing long links on social media, in emails, or anywhere else where a shorter link is more convenient.</p>
+    </section>
+    <section class="history">
+      <h3>Your Shortened URLs</h3>
+      <div id="history-list">
+        
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>Improved by <a href="https://github.com/creinis">Carlos Reinis</a></p>
+  </footer>
+  <script>
+    document.getElementById('shorten-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const url = document.getElementById('url_input').value;
+      
+      fetch('/api/shorturl', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          const historyList = document.getElementById('history-list');
+          const shortUrlElement = document.createElement('div');
+          shortUrlElement.className = 'short-url';
+          shortUrlElement.innerHTML = `
+            <span>${data.original_url}</span>
+            <a href="/api/shorturl/${data.short_url}" target="_blank">${window.location.origin}/api/shorturl/${data.short_url}</a>
+          `;
+          historyList.appendChild(shortUrlElement);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
 </html>

@@ -2,17 +2,15 @@ require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const urlparser = require('url')
 const express = require('express');
-/* const cors = require('cors'); */
+const cors = require('cors');
 const app = express();
 
 const path = require('path');
 const dns = require('dns');
 const { URL } = require('url');
 
-// Basic Configuration
 const port = process.env.PORT || 3000;
 
-// MongoDB Connection
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db("freecodecamp_db_1");
 const urls = db.collection("urls");
@@ -23,14 +21,14 @@ async function connectDB() {
     console.log('Connected to MongoDB');
   } catch (err) {
     console.error('Failed to connect to MongoDB:', err);
-    setTimeout(connectDB, 5000); // Retry after 5 seconds if connection fails
+    setTimeout(connectDB, 5000); 
   }
 }
 
 connectDB();
 
 // Middleware
-/* app.use(cors()); */
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'));
